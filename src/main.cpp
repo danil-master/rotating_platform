@@ -1,36 +1,53 @@
 #include <Arduino.h>
 #include <Servo.h>
+
+int leftButtonPin = 8;
+int rightButtonPin = 7;
+
 Servo servo;
 int servoPin=9;
 int step_time=500;
-int leftButtonPin = 8;
-int rightButtonPin = 7;
-int step_deg = 10;
+int step_deg = 10; // angle of rotatiom
+int numbMicroStep =10; //for smooth rotation 
 
-int serva_position = 0;
+int serva_position;
+
+        int clockwiseMove(){
+        servo.attach(servoPin); //Servo in on
+         for (int x = 0; x < numbMicroStep; x++){
+          serva_position = serva_position+step_deg/numbMicroStep;
+          servo.write(serva_position);
+          delay(step_time/numbMicroStep);
+         }      
+
+        servo.detach(); //Servo is off
+        return serva_position;
+        }
+
+        int counter_clockwiseMove(){
+          servo.attach(servoPin);
+            for (int x = 0; x < numbMicroStep; x++){
+              serva_position = serva_position-step_deg/numbMicroStep;
+              servo.write(serva_position);
+              delay(step_time/numbMicroStep);
+         }      
+
+        servo.detach(); 
+        return serva_position;
+        }
+ 
 void setup() 
 {
- servo.attach(servoPin); //Сервопривод подключается 
- servo.write(serva_position);
- pinMode(leftButtonPin, INPUT); 
+
 }
 void loop() 
 {
    if ((digitalRead(leftButtonPin)==HIGH)&&serva_position!=180) 
       { 
-        servo.attach(servoPin); //Сервопривод подключается     
-        serva_position = serva_position+step_deg;
-        servo.write(serva_position);
-        delay(step_time);
-        servo.detach(); //Сервопривод отключается
+          serva_position = clockwiseMove();
       }
- if ((digitalRead(rightButtonPin)==HIGH)) 
+ if ((digitalRead(rightButtonPin)==HIGH)&&serva_position!=0) 
       { 
-        servo.attach(servoPin); //Сервопривод подключается     
-        serva_position =0;
-        servo.write(serva_position);
-        delay(500);
-        servo.detach(); //Сервопривод отключается
+          serva_position = counter_clockwiseMove();
       }
 }
- 
