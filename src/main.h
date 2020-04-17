@@ -1,0 +1,2 @@
+int clockwiseMove();
+int counterClockwiseMove();
